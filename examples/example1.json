@@ -1,4 +1,4 @@
 {
-    "host": "http://mediafront",
+    "host": "http://localhost:8888",
     "user": "admin"
 }
