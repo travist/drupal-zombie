@@ -805,6 +805,32 @@ https://github.com/travist/drupal.go.js
     ]);</span>
             </code></pre>
           </section>
+          <section>
+            <h3>Extending drupal.go.js</h3>
+            <pre><code contenteditable>
+    var drupal =    require('drupalgo');
+    drupal.load('config.json');
+
+    <span class='fragment'>drupal.editNode = function(nid, title, done) {
+      async.series([
+        this.do('visit', 'node/' + nid + '/edit'),
+        this.do('fill', '#edit-title', title),
+        this.do('pressButton', '#edit-submit')
+      ], done);
+    };</span>
+
+    <span class='fragment'>async.series([
+      <span class='fragment'>drupal.go('login'),</span>
+      <span class='fragment'>drupal.go('createMultipleContent', drupal.config.get('nodes')),</span>
+      <span class='fragment'>drupal.go('editNode', 12345, 'Testing!')</span>
+    ]);</span>
+            </code></pre>
+          </section>
+          <section>
+            <h3>It's open source... so fork it!</h3>
+            <strong><a href='https://github.com/travist/drupal.go.js'>https://github.com/travist/drupal.go.js</a></strong>
+            <img src='assets/drupal.go.jpg' />
+          </section>
         </section>
         <section>
           <h1>Thanks</h1>
