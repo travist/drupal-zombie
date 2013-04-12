@@ -1,0 +1,7 @@
+{
+  "name": "drupal-automate",
+  "dependencies": {
+    "drupalgo": ">=0",
+    "async": ">=0"
+  }
+}

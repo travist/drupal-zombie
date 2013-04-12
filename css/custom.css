@@ -1,0 +1,11 @@
+.reveal section img.trans-image {
+  display: inline;
+  border: none;
+  background: rgba(255,255,255,0);
+  box-shadow: none;
+}
+
+.reveal section img.zombie-image {
+  width: 1.0em;
+  margin-bottom: -0.3em;
+}

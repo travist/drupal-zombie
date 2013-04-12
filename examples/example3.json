@@ -1,0 +1,21 @@
+{
+    "host": "http://mediafront",
+    "user": "admin",
+    "nodes": [
+      {
+        "type": "article",
+        "title": "Hello There",
+        "body": "This is very cool!"
+      },
+      {
+        "type": "article",
+        "title": "This is another node",
+        "body": "Nice!"
+      },
+      {
+        "type": "article",
+        "title": "Another One!!!",
+        "body": "Woah!!!!"
+      }
+    ]
+}

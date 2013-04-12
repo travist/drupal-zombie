@@ -1,0 +1,847 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>Automating and Testing Drupal with Zombie.js</title>
+    <meta name="description" content="Automating and Testing Drupal with Zombie.js">
+    <meta name="author" content="Travis Tidwell">
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <link rel="stylesheet" href="css/reveal.min.css">
+    <link rel="stylesheet" href="css/theme/default.css" id="theme">
+
+    <!-- For syntax highlighting -->
+    <link rel="stylesheet" href="lib/css/zenburn.css">
+
+    <!-- If the query includes 'print-pdf', use the PDF print sheet -->
+    <script>
+      document.write('<link rel="stylesheet" href="css/print/' + (window.location.search.match(/print-pdf/gi) ? 'pdf' : 'paper') + '.css" type="text/css" media="print">');
+    </script>
+
+    <!--[if lt IE 9]>
+    <script src="lib/js/html5shiv.js"></script>
+    <![endif]-->
+
+    <link rel="stylesheet" href="css/custom.css">
+  </head>
+  <body>
+    <div class="reveal">
+      <!-- Any section element inside of this container is displayed as a slide -->
+      <div class="slides">
+        <section>
+          <h1>Automating and Testing Drupal with<br/>Z<img class="trans-image zombie-image" src="assets/drupal-zombie.png" />mbie.js</h1>
+          <h3>From bite to believing</h3>
+          <p><small>Infected by <a href="http://github.com/travist">Travis Tidwell</a> / <a href="http://twitter.com/softwaregnome">@softwaregnome</a></small></p>
+        </section>
+
+        <section>
+          <section>
+            <h1>The Bite</h1>
+            <h4>What is Zombie.js?</h4>
+            <ul>
+              <li class="fragment">Insanely fast, headless browser.</li>
+              <li class="fragment">Written completely in JavaScript.</li>
+              <li class="fragment">Powered by Node.js</li>
+            </ul>
+          </section>
+          <section>
+            <h1>The Bite</h1>
+            <h4>Why do I care?</h4>
+            <ul>
+              <li class="fragment">Automate anything in the Drupal UI.</li>
+              <li class="fragment">Both an automation AND testing tool.</li>
+              <li class="fragment">Headless == Continuous Integration friendly.</li>
+              <li class="fragment">CLI friendly... Allows for user input.</li>
+              <li class="fragment">And let's face it... <span class="fragment">you're lazy.</span></li>
+            </ul>
+          </section>
+          <section>
+            <h3>And the lazy developers are bitten first...</h3>
+            <img src="assets/zombie-chasing.jpg" />
+          </section>
+          <section>
+            <h2>You have been bitten.</h2>
+            <p><img src="assets/nerd-zombie.png" /></p>
+            <p><small><a href="http://dribbble.com">dribble</a> by <a href="http://dribbble.com/AzzaMcKazza">Arran McKenna</a></small></p>
+          </section>
+          <aside class="notes">
+          </aside>
+        </section>
+
+
+        <section>
+          <section>
+            <h1>Infection</h1>
+            <h4>Installation of Zombie.js is 'kind of' easy...</h4>
+          </section>
+          <section>
+            <h1>Infection</h1>
+            <h4>Step 1: Go to http://nodejs.org/ and download and install.</h4>
+            <img src="assets/node-js-install.jpg" height="400em" />
+            <p class="fragment">But... Zombie.js doesn't jive with v0.10 of node.js.</p>
+          </section>
+          <section>
+            <h1>Infection</h1>
+            <h4>Step 2: Get the Node Version Manager (nvm).</h4>
+            <pre class="fragment"><code contenteditable>
+   https://github.com/creationix/nvm
+   <span class="fragment">curl https://raw.github.com/creationix/nvm/master/install.sh | sh</span>
+   <span class="fragment">mac:~ travist$ nvm install 0.8</span>
+            </code></pre>
+          </section>
+          <section>
+            <h1>Infection</h1>
+            <h4>Step 3: Install a C++ compiler.</h4>
+            <pre><code contenteditable>
+   https://github.com/kennethreitz/osx-gcc-installer
+            </code></pre>
+            <img src="assets/gcc-installer-binaries.jpg" />
+          </section>
+          <section>
+            <h1>Infection</h1>
+            <h4>Step 4: Setup your project.</h4>
+            <pre><code contenteditable>
+   mac:~ travist$ mkdir drupal-zombie
+   <span class="fragment">mac:drupal-zombie travist$ cd drupal-zombie</span>
+   <span class="fragment">mac:drupal-zombie travist$ nano package.json</span>
+   <span class="fragment">
+      {
+        "name": "drupal-zombie",
+        "dependencies": {
+          "zombie": ">=0"
+        }
+      }
+   </span>
+            </code></pre>
+          </section>
+          <section>
+            <h1>Infection</h1>
+            <h4>Step 5: Use Node.js v0.8 and install dependencies.</h4>
+            <pre><code contenteditable>
+   mac:drupal-zombie travist$ nvm use 0.8
+   <span class="fragment">mac:drupal-zombie travist$ npm install</span>
+            </code></pre>
+          </section>
+        </section>
+
+        <section>
+          <section>
+            <h1>Walking</h1>
+            <p>Create a new app.js file.</p>
+            <pre><code contenteditable>
+   mac:drupal-zombie travist$ nano app.js
+   <span class="fragment">
+    var Browser = require("zombie");
+    <span class="fragment">var browser = new Browser();</span>
+    <span class="fragment">browser.visit("http://drupal.org/search", function () {
+      <span class="fragment">browser.fill('#edit-keys', 'zombie', function() {
+        <span class="fragment">browser.pressButton('#edit-submit', function() {
+          <span class="fragment">console.log(browser.text('dt.title:eq(0)'));</span>
+        });</span>
+      });</span>
+    });</span>
+   </span>
+            </code></pre>
+          </section>
+          <section>
+            <h2>Asynchronous vs. Serial</h2>
+          </section>
+          <section>
+            <h3>Serial Execution</h3>
+            <p>Waits for one operation to end before starting the next.</p>
+            <pre class='fragment'><code contenteditable>
+    function doSomething() {
+      console.log('something');
+    }
+
+    function doSomethingElse() {
+      console.log('something else');
+    }
+
+    <span class='fragment'>doSomething();</span>
+    <span class='fragment'>doSomethingElse();</span>
+            </code></pre>
+            <pre class='fragment'><code contenteditable>
+    'something'
+    'something else'
+            </code></pre>
+          </section>
+          <section>
+            <h3>Serial Execution</h3>
+            <p>It gets interesting when they depend on one another.</p>
+            <pre class='fragment'><code contenteditable>
+    function getSomething() {
+      return 'something';
+    }
+
+    function saySomething(what) {
+      console.log(what);
+    }
+
+    <span class='fragment'>var something = getSomething();</span>
+    <span class='fragment'>saySomething(something);</span>
+            </code></pre>
+            <pre class='fragment'><code contenteditable>
+    'something'
+            </code></pre>
+          </section>
+          <section>
+            <h3>Serial Execution</h3>
+            <p><small>And more interesting when <code>getSomething</code> depends on an asynchronous source.</small></p>
+            <pre><code contenteditable>
+    function getSomething() {
+      <span class='fragment'>http.get('http://google.com', function(response) {
+        <span class='fragment'>return response; // ??????</span>
+      });</span>
+      <span class='fragment'>// returns nothing... NULL</span>
+    }
+
+    function saySomething(what) {
+      console.log(what);
+    }
+
+    var something = getSomething(); <span class='fragment'>// something = NULL</span>
+    saySomething(something);
+            </code></pre>
+            <pre class='fragment'><code contenteditable>
+    NULL
+            </code></pre>
+          </section>
+          <section>
+            <img src='assets/mind-blown.gif' width='100%' />
+          </section>
+          <section>
+            <h3>Asynchronous Execution</h3>
+            <pre><code contenteditable>
+    function getSomething(<span class='fragment'>callback</span>) {
+      http.get('http://google.com', function(response) {
+        <span class='fragment'>callback(response);</span>
+      });
+    }
+
+    function saySomething(what) {
+      console.log(what);
+    }
+
+    <span class='fragment'>
+    getSomething<span class='fragment'>(function(what) {
+      <span class='fragment'>saySomething(what);</span>
+    });</span>
+    </span>
+            </code></pre>
+            <pre class='fragment'><code contenteditable>
+    'something'
+            </code></pre>
+          </section>
+          <section>
+            <h1>Another look...</h1>
+            <pre><code contenteditable>
+    var Browser = require("zombie");
+    var browser = new Browser();
+    browser.visit("http://drupal.org/search", function () {
+      browser.fill('#edit-keys', 'zombie', function() {
+        browser.pressButton('#edit-submit', function() {
+          console.log(browser.text('dt.title:eq(0)'));
+        });
+      });
+    });
+            </code></pre>
+          </section>
+          <section>
+            <h3>But this indicates a different problem...</h3>
+            <pre><code contenteditable>
+    var Browser = require("zombie");
+    var browser = new Browser();
+    browser.visit("http://drupal.org/search", function () {
+      browser.fill('#edit-keys', 'zombie', function() {
+        browser.pressButton('#edit-submit', function() {
+          browser.visit("http://drupal.org/project/mediafront", function() {
+            browser.clickLink('Read documentation', function() {
+              browser.doSomething('something', function() {
+                browser.doSomethingElse('somethingelse', function() {
+                  browser.keepDoingStuff('stuff', function() {
+                    browser.doMoreStuff('more stuff', function() {
+                      browser.evenMoreStuff('oh man...', function() {
+                        ...
+                        ...
+                      });
+                    });
+                  });
+                });
+              });
+            });
+          });
+        });
+      });
+    });
+            </code></pre>
+          </section>
+          <section>
+            <h3>It's like a zombie matryoshka nightmare.</h3>
+            <img class="trans-image" src="assets/zombie-matryoshka.png" />
+            <p><small class="fragment">somtimes called 'callback hell'.</small></p>
+          </section>
+          <section>
+            <h3>Zombie.js 'tries' to fix this problem with 'promises'.</h3>
+            <pre><code contenteditable>
+    // Fill in the form and submit.
+    browser.
+      fill("Your Name", "Arm Biter").
+      fill("Profession", "Living dead").
+      select("Born", "1968").
+      uncheck("Send me the newsletter").
+      pressButton("Sign me up", function() {
+
+        // Make sure we got redirected to thank you page.
+        assert.equal(browser.location.pathname, "/thankyou");
+
+      });
+            </code></pre>
+            <p class='fragment'><small>But when you should and should NOT use the 'promise' varies...</small></p>
+            <p class='fragment'><small>And it breaks down when promises have dependencies on other promises.</small></p>
+          </section>
+          <section>
+            <h3>And what about this use case?...</h3>
+            <p><small>Try to iterate over a list of nodes (Views) and do something with them.</small></p>
+            <pre class='fragment'><code contenteditable>
+    var _ = require('underscore');
+    browser.visit('http://drupal.org/forum', function() {
+      <span class='fragment'>var nodes = browser.queryAll('tbody tr');</span>
+      <span class='fragment'>_.each(nodes, function(node) {
+        <span class="fragment">var link = browser.query('div.name a', node);</span>
+        <span class='fragment'>browser.fire("click", link, function() {
+          console.log(browser.text('h1'));
+        });</span>
+      });</span>
+    });
+            </code></pre>
+            <pre class='fragment'><code contenteditable>
+      Community
+      Community
+      Community
+      Installing Drupal
+      Installing Drupal
+      Installing Drupal
+      Installing Drupal
+      ...
+      ...
+            </code></pre>
+            <p class='fragment'><small>Each <code>clickLink</code> will interrupt the previous and only go to the last one...</small></p>
+          </section>
+          <section>
+            <img src='assets/mind-blown.gif' width='100%' />
+          </section>
+        </section>
+        <section>
+          <section>
+            <h1>Using async.js</h1>
+            <pre><code contenteditable style='text-align:center;'>
+https://github.com/caolan/async
+
+</code></pre>
+            <ul>
+              <li class='fragment'>Uses asynchronous control flow instead of promises.</li>
+              <li class='fragment'>Isomorphic</li>
+            </ul>
+          </section>
+          <section>
+            <h3>Install Async.js</h3>
+            <div class="fragment"><small style="margin: 1em 0 -1em -35em;">package.json</small>
+            <pre><code contenteditable>
+    "dependencies": {
+        "async": ">=0",
+        ...
+            </code></pre></div>
+            <div class="fragment"><pre><code>mac:drupal-zombie travist$ npm install</code></pre></div>
+          </section>
+          <section>
+            <h3><code>async.series</code> usage</h3>
+            <pre><code contenteditable>
+    var async = require('async');
+
+    async.series([
+      function(done){
+        // do some stuff ...
+        done();
+      },
+      function(done){
+        // do some more stuff ...
+        done();
+      }
+    ], function(err, results){
+      // results is now equal to ['one', 'two']
+    });
+            </code></pre>
+          </section>
+          <section>
+            <h3><code>async.series</code> example</h3>
+            <h4 style='text-align: left;margin-left: 1em;'>Before:</h4>
+            <pre><code contenteditable><small>
+    browser.visit("http://drupal.org/search", function () {
+      browser.fill('#edit-keys', 'zombie', function() {
+        browser.pressButton('#edit-submit', function() {
+          console.log(browser.text('dt.title:eq(0)'));
+        });
+      });
+    });
+            </small></code></pre>
+            <div class="fragment"><h4 style='text-align: left;margin-left: 1em;'>After:</h4>
+            <pre><code contenteditable>
+    async.series([
+      function(done) {
+        browser.visit('http://drupal.org/search', done);
+      },
+      function(done) {
+        browser.fill('#edit-keys', 'zombie', done);
+      },
+      function(done) {
+        browser.pressButton('#edit-submit', done);
+      }
+    ], function() {
+      console.log(browser.text('dt.title:eq(0)'));
+    });
+            </code></pre></div>
+          </section>
+          <section>
+            <h3>Create a wrapper function...</h3>
+            <pre><code contenteditable>
+    var go = function() {
+      var args = _.values(arguments);
+      var method = args.shift();
+      return function(done) {
+        args.push(done);
+        browser[method].apply(browser, args);
+      };
+    };
+
+    <span class='fragment'>async.series([
+      go('visit', 'http://drupal.org/search'),
+      go('fill', '#edit-keys', 'zombie'),
+      go('pressButton', '#edit-submit')
+    ], function() {
+      console.log(browser.text('dt.title:eq(0)'));
+    });</span>
+            </code></pre>
+          </section>
+          <section>
+            <h3>Remember this nightmare?</h3>
+            <pre><code contenteditable><small>
+    browser.visit('http://drupal.org/forum', function() {
+      var nodes = browser.queryAll('tbody tr');
+      _.each(nodes, function(node) {
+        var link = browser.query('div.name a', node);
+        browser.fire("click", link, function() {
+          console.log(browser.text('h1'));
+        });
+      });
+    });
+            </small></code></pre>
+            <pre class='fragment'><code contenteditable>
+    async.series([
+      <span class="fragment">go('visit', 'http://drupal.org/forum'),</span>
+      <span class="fragment">function(done) {
+        <span class="fragment">var nodes = browser.queryAll('tbody tr');</span>
+        <span class="fragment">async.eachSeries(nodes, function(node, nodeDone) {
+          <span class="fragment">var link = browser.query('div.name a', node);</span>
+          <span class="fragment">browser.fire("click", link, function() {
+            console.log(browser.text('h1'));
+            <span class="fragment">nodeDone();</span>
+          });</span>
+        }</span><span class="fragment">, done);</span>
+      }</span>
+    ]);
+            </code></pre>
+          </section>
+          <section>
+            <h3>The whole app</h3>
+            <pre><code contenteditable><small>
+    var Browser = require("zombie");
+    var browser = new Browser();
+    var _ = require('underscore');
+    var async = require('async');
+
+    var go = function() {
+      var args = _.values(arguments);
+      var method = args.shift();
+      return function(done) {
+        args.push(done);
+        browser[method].apply(browser, args);
+      };
+    };
+
+    async.series([
+      go('visit', 'http://drupal.org/forum'),
+      function(done) {
+        var nodes = browser.queryAll('tbody tr');
+        async.eachSeries(nodes, function(node, nodeDone) {
+          var link = browser.query('div.name a', node);
+          browser.fire("click", link, function() {
+            console.log(browser.text('h1'));
+            nodeDone();
+          });
+        }, done);
+      }
+    ]);
+            </small></code></pre>
+          </section>
+          <section>
+            <h3>async.js: Methods to care about</h3>
+            <ul>
+              <li class="fragment"><a href="https://github.com/caolan/async#series">async.series</a> - Run an array of functions in series.</li>
+              <li class="fragment"><a href="https://github.com/caolan/async#eachseriesarr-iterator-callback">async.eachSeries</a> - Iterator is applied to each item in the array in series.</li>
+              <li class="fragment"><a href="https://github.com/caolan/async#whilst">async.whilst</a> - Repeatedly call a function, while test returns true.</li>
+            </ul>
+          </section>
+        </section>
+        <section>
+          <section>
+            <h1>Drupal and Zombie.js</h1>
+            <img class="trans-image" src="assets/drupal-zombie.png" width="200em" />
+          </section>
+          <section>
+            <h3>Benefits of Drupal + Zombie.js.</h3>
+            <ul>
+              <li class='fragment'>Standard menu system = code reuse.</li>
+              <li class='fragment'>Don't need to be an admin of the site/server to automate.</li>
+              <li class='fragment'>Command line arguments and prompts.</li>
+            </ul>
+          </section>
+          <section>
+            <h3>Example:  Login to Drupal</h3>
+            <pre><code contenteditable>
+    async.series([
+      <span class='fragment'>go('visit', '/user'),</span>
+      <span class='fragment'>go('fill', '#edit-name', 'admin'),</span>
+      <span class='fragment'>go('fill', '#edit-pass', '123password'),</span>
+      <span class='fragment'>go('pressButton', '#edit-submit')</span>
+    ]<span class='fragment'>, function() {
+      console.log('Logged in as admin.');
+    });</span>
+            </code></pre>
+          </section>
+          <section>
+            <h3>Login to Drupal: Code Reuse</h3>
+            <pre><code contenteditable>
+    <span class='fragment'>var login = function(user, pass, done) {
+      async.series([
+        go('visit', '/user'),
+        go('fill', '#edit-name', user),
+        go('fill', '#edit-pass', pass),
+        go('pressButton', '#edit-submit')
+      ], done);
+    };</span>
+
+    <span class='fragment'>async.series([
+      <span class='fragment'>go('login', 'admin', '123password')</span>
+    ]<span class='fragment'>, function() {
+      console.log('Logged in as admin.');
+    });</span></span>
+            </code></pre>
+          </section>
+          <section>
+            <h3>Using Configurations</h3>
+            <p>Let's change this code to use a configuration file.</p>
+            <p>Using a library called <a href='https://github.com/flatiron/nconf'>nconf</a>.</p>
+            <div class="fragment"><small style="margin: 1em 0 -1em -35em;">package.json</small>
+            <pre><code contenteditable>
+    "dependencies": {
+        "nconf": ">=0",
+        ...
+            </code></pre></div>
+            <div class="fragment"><pre><code>mac:drupal-zombie travist$ npm install</code></pre></div>
+            <div class="fragment"><small style="margin: 1em 0 -1em -35em;">config.json</small>
+            <pre><code contenteditable>
+    {
+        "host": "http://drupal.local",
+        "user": "admin",
+        "pass": "123password"
+    }
+            </code></pre></div>
+          </section>
+          <section>
+            <h3>Using Configurations</h3>
+            <small style="margin: 1em 0 -1em -35em;">config.json</small>
+            <pre><code contenteditable><small>
+    {
+        "host": "http://drupal.local",
+        "user": "admin",
+        "pass": "123password"
+    }
+            </small></code></pre>
+            <pre><code contenteditable>
+    var Browser =   require('zombie');
+    var config =    require('nconf');
+
+    <span class='fragment'>config.argv().env().file({file:'config.json'});</span>
+    <span class='fragment'>var browser = new Browser({site: config.get('host')});</span>
+    <span class='fragment'>var go = function() {......};
+    var login = function(user, pass, done) {......};</span>
+
+    <span class='fragment'>async.series([
+      <span class='fragment'>go('login', config.get('user'), config.get('pass'))</span>
+    ]<span class='fragment'>, function() {
+      console.log('Logged in as admin.');
+    });</span></span>
+            </code></pre>
+          </section>
+          <section>
+            <h3>Using Prompt</h3>
+            <p>Change the password so it prompts you for it.</p>
+            <p>Using a library called <a href='https://github.com/flatiron/prompt'>prompt</a>.</p>
+            <div class="fragment"><small style="margin: 1em 0 -1em -35em;">package.json</small>
+            <pre><code contenteditable>
+    "dependencies": {
+        "prompt": ">=0",
+        ...
+            </code></pre></div>
+            <div class="fragment"><pre><code>mac:drupal-zombie travist$ npm install</code></pre></div>
+          </section>
+          <section>
+            <h3>Using Prompt</h3>
+            <p>Change the password so it prompts you for it.</p>
+            <p>Using a library called <a href='https://github.com/flatiron/prompt'>prompt</a>.</p>
+            <pre><code contenteditable>
+    var prompt = require('prompt');
+    prompt.start();
+
+    <span class='fragment'>... other boilerplate code (go, login, etc) ...</span>
+
+    <span class='fragment'>async.series([
+      <span class='fragment'>function(done) {
+        <span class='fragment'>prompt.get({name: 'pass', hidden: true}, function(pass) {
+          <span class='fragment'>config.set('pass', pass);</span>
+          <span class='fragment'>done();</span>
+        });</span>
+      },</span>
+      go('login', config.get('user'), config.get('pass'))
+    ], function() {
+      console.log('Logged in as admin.');
+    });</span>
+            </code></pre>
+          </section>
+          <section>
+            <h3>Man... all this should be in a library!</h3>
+          </section>
+        </section>
+        <section>
+          <section>
+            <strong><a href="https://github.com/travist/drupal.go.js">drupal.go.js</a></strong>
+            <p><small>A node.js package to automate and test Drupal using Zombie.js.</small></p>
+            <pre><code contenteditable style="text-align:center;">
+https://github.com/travist/drupal.go.js
+            </code></pre>
+            <div class="fragment"><pre><code contenteditable style="text-align:center;">
+    mac:drupal-zombie travist$ npm install drupalgo
+          </code></pre></div>
+          </section>
+          <section>
+            <h3>Setup</h3>
+            <small style="margin: 1em 0 -1em -35em;">package.json</small>
+            <pre><code contenteditable><small>
+    {
+      "name": "drupal-automate",
+      "dependencies": {
+        "drupalgo": ">=0",
+        "async": ">=0"
+      }
+    }
+            </small></code></pre>
+            <pre class="fragment"><code>
+    mac:drupal-zombie travist$ nvm use 0.8
+    mac:drupal-zombie travist$ npm install
+            </code></pre>
+            <div class='fragment'><small style="margin: 1em 0 -1em -35em;">config.json</small>
+            <pre><code contenteditable><small>
+    {
+      "host": "http://drupal.org",
+      "user": "travist"
+    }
+            </small></code></pre></div>
+          </section>
+          <section>
+            <h3>Building your application.</h3>
+            <small style="margin: 1em 0 -1em -35em;">app.js</small>
+            <pre><code contenteditable>
+    var drupal = require('drupalgo');
+    var async = require('async');
+
+    <span class='fragment'>// Load the configuration file.
+    drupal.load('config.json');</span>
+
+    <span class='fragment'>async.series([
+      <span class='fragment'>drupal.go('login')</span>
+    ]<span class='fragment'>, function() {
+      console.log('Done');
+    });</span></span>
+            </code></pre>
+          </section>
+          <section>
+            <h3>The API (for now...)</h3>
+            <small><ul>
+              <li class='fragment'><code>drupal.go</code> - Wrapper function to return async promises.</li>
+              <li class='fragment'><code>drupal.login(user, [pass], done)</code> - Login to Drupal.</li>
+              <li class='fragment'><code>drupal.get(param, [value], done)</code> - Get or prompt a configuration.</li>
+              <li class='fragment'><code>drupal.set(param, value, done)</code> - Sets a configuration variable.</li>
+              <li class='fragment'><code>drupal.createContent(node, done)</code> - Create a piece of content.</li>
+              <li class='fragment'><code>drupal.createMultipleContent(nodes, done)</code> - Create multiple content.</li>
+              <li class='fragment'><code>drupal.eachViewItem(context, item, callback, done)</code> - Iterates over every item within a view (including pagination).</li>
+            </ul></small>
+          </section>
+          <section>
+            <h3>Example 1: Creating Content.</h3>
+            <p>Note: Every API can be passed to <code>drupal.go</code></p>
+            <pre><code contenteditable>
+    var drupal = require('drupalgo');
+    var async = require('async');
+    drupal.load('example1.json');
+
+    async.series([
+      <span class='fragment'>drupal.go('login'),</span>
+      <span class='fragment'>drupal.go('get', 'title'),</span>
+      <span class='fragment'>drupal.go('createContent', function() {
+        return {
+          type: 'article',
+          title: drupal.config.get('title')
+        };
+      })</span>
+    ]);
+            </code></pre>
+            <div class='fragment'><small style="margin: 1em 0 -1em -35em;">config.json</small>
+            <pre><code contenteditable><small>
+    {
+      "host": "http://drupal.local",
+      "user": "admin",
+      "title": "My node"
+    }
+            </small></code></pre></div>
+          </section>
+          <section>
+            <h3>Example 2: Create content on the fly.</h3>
+            <pre><code contenteditable style='max-height: 450px;'><small style='font-size:0.7em;'>
+    var drupal = require('drupalgo');
+    var async = require('async');
+    drupal.load('example2.json');
+
+    <span class='fragment'>async.series([
+      <span class='fragment'>drupal.go('login'),</span>
+      <span class='fragment'>function(done) {
+        <span class='fragment'>async.whilst(
+          <span class='fragment'>function() { return drupal.config.get('title') !== ''; },</span>
+          <span class='fragment'>function(nodeDone) {
+            <span class='fragment'>async.series([
+              <span class='fragment'>drupal.go('set', 'title', ''),</span>
+              <span class='fragment'>drupal.go('get', 'title'),</span>
+              <span class='fragment'>drupal.go('createContent', function() {
+                <span class='fragment'>return {
+                  type: 'article',
+                  title: drupal.config.get('title')
+                };</span>
+              })</span>
+            ]</span><span class='fragment'>, nodeDone);</span>
+          },</span>
+          <span class='fragment'>done</span>
+        );</span>
+      }</span>
+    ]);</span>
+            </small></code></pre>
+          </section>
+          <section>
+            <h3>Example 3: Automated Content Creation.</h3>
+            <small style="margin: 1em 0 -1em -35em;">example3.json</small>
+            <pre><code contenteditable><small>
+    {
+        "host": "http://drupal.local",
+        "user": "admin",
+        "nodes": [
+          {
+            "type": "article",
+            "title": "Hello There",
+            "body": "This is very cool!"
+          },
+          {
+            "type": "article",
+            "title": "This is another node",
+            "body": "Nice!"
+          }
+        ]
+    }
+            </small></code></pre>
+            <div class='fragment'><small style="margin: 1em 0 -1em -37em;">app.js</small>
+            <pre><code contenteditable>
+    var drupal = require('drupalgo');
+    var async = require('async');
+    drupal.load('example3.json');
+
+    <span class='fragment'>async.series([
+      drupal.go('login'),
+      <span class='fragment'>drupal.go('createMultipleContent', drupal.config.get('nodes'))</span>
+    ]);</span>
+            </code></pre></div>
+          </section>
+          <section>
+            <h3>Example 4: Auto module maintainer.</h3>
+            <pre><code contenteditable>
+    var drupal = require('drupalgo');
+    var async = require('async');
+    <span class='fragment'>var browser = drupal.load('example4.json');</span>
+
+    <span class='fragment'>async.series([
+      drupal.go('login'),
+      <span class='fragment'>drupal.go('visit', '/project/issues/mediafront'),</span>
+      <span class='fragment'>function(done) {
+        <span class='fragment'>drupal.eachViewItem('div.view-id-project_issue_project', 'td.views-field-title', function(node, done) {
+          <span class='fragment'>var version = browser.text('td.views-field-version', browser.xpath('./..', node).value[0]);</span>
+          <span class='fragment'>console.log(browser.text('a', node) + ' : ' + version);</span>
+          <span class='fragment'>done();</span>
+        }, done);</span>
+      }</span>
+    ]);</span>
+            </code></pre>
+          </section>
+        </section>
+      </div>
+    </div>
+    <script src="lib/js/head.min.js"></script>
+    <script src="js/reveal.min.js"></script>
+    <script>
+
+            // Full list of configuration options available here:
+            // https://github.com/hakimel/reveal.js#configuration
+            Reveal.initialize({
+              controls: true,
+              progress: true,
+              history: true,
+              center: true,
+              theme: Reveal.getQueryHash().theme, // available themes are in /css/theme
+              transition: Reveal.getQueryHash().transition || 'default', // default/cube/page/concave/zoom/linear/fade/none
+
+              // Optional libraries used to extend on reveal.js
+              dependencies: [
+                {src: 'lib/js/classList.js', condition: function() {
+                    return !document.body.classList;
+                  }},
+                {src: 'plugin/markdown/showdown.js', condition: function() {
+                    return !!document.querySelector('[data-markdown]');
+                  }},
+                {src: 'plugin/markdown/markdown.js', condition: function() {
+                    return !!document.querySelector('[data-markdown]');
+                  }},
+                {src: 'plugin/highlight/highlight.js', async: true, callback: function() {
+                    hljs.initHighlightingOnLoad();
+                  }},
+                {src: 'plugin/zoom-js/zoom.js', async: true, condition: function() {
+                    return !!document.body.classList;
+                  }},
+                {src: 'plugin/notes/notes.js', async: true, condition: function() {
+                    return !!document.body.classList;
+                  }}
+                // { src: 'plugin/search/search.js', async: true, condition: function() { return !!document.body.classList; } }
+                // { src: 'plugin/remotes/remotes.js', async: true, condition: function() { return !!document.body.classList; } }
+              ]
+            });
+
+    </script>
+
+  </body>
+</html>
