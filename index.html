@@ -195,9 +195,9 @@
             <p><small>And more interesting when <code>getSomething</code> depends on an asynchronous source.</small></p>
             <pre><code contenteditable>
     function getSomething() {
-      <span class='fragment'>http.get('http://google.com', function(response) {
+      <span class='fragment'>http.get('http://google.com'<span class="fragment">, function(response) {
         <span class='fragment'>return response; // ??????</span>
-      });</span>
+      });</span></span>
       <span class='fragment'>// returns nothing... NULL</span>
     }
 
