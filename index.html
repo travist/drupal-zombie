@@ -834,6 +834,37 @@ https://github.com/travist/drupal.go.js
           </section>
         </section>
         <section>
+          <section>
+            <h1>Testing</h1>
+          </section>
+          <section>
+            <h3>Testing using assert.</h3>
+            <pre><code contenteditable>
+    <span class='fragment'>var assert = require('assert');</span>
+    var drupal = require('drupalgo');
+    drupal.load('config.json');
+
+    drupal.editNode = function(nid, title, done) {
+      async.series([
+        this.do('visit', 'node/' + nid + '/edit'),
+        this.do('fill', '#edit-title', title),
+        this.do('pressButton', '#edit-submit'),
+        <span class='fragment'>function(done) {
+          <span class='fragment'>assert.ok(browser.success);</span>
+          <span class='fragment'>assert.equal(browser.text("title"), title);</span>
+        }</span>
+      ], done);
+    };
+
+    <span class='fragment'>async.series([
+      drupal.go('login'),
+      drupal.go('createMultipleContent', drupal.config.get('nodes')),
+      drupal.go('editNode', 12345, 'Testing!')
+    ]);</span>
+            </code></pre>
+          </section>
+        </section>
+        <section>
           <h1>Thanks</h1>
           <h3>References</h3>
           <ul>
