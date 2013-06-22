@@ -1,6 +1,6 @@
 var drupal = require('drupalgo');
 var async = require('async');
-var browser = drupal.load('example4.json', {maxWait: 20000});
+var browser = drupal.load('example5.json', {maxWait: 20000});
 
 async.series([
   drupal.go('login'),
