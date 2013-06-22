@@ -114,7 +114,7 @@
       {
         "name": "drupal-zombie",
         "dependencies": {
-          "zombie": ">=0"
+          "zombie": "< 2"
         }
       }
    </span>
@@ -335,7 +335,7 @@
             <p class='fragment'><small>Each <code>clickLink</code> will interrupt the previous and only go to the last one...</small></p>
           </section>
           <section>
-            <img src='assets/mind-blown.gif' width='100%' />
+            <h2>We need a library to control the asynchronous process flow.</h2>
           </section>
         </section>
         <section>
@@ -668,7 +668,7 @@ https://github.com/travist/drupal.go.js
           </section>
           <section>
             <h3>Building your application.</h3>
-            <small style="margin: 1em 0 -1em -35em;">app.js</small>
+            <small style="margin: 1em 0 -1em -37em;">app.js</small>
             <pre><code contenteditable>
     var drupal = require('drupalgo');
     var async = require('async');
@@ -714,7 +714,7 @@ https://github.com/travist/drupal.go.js
       })</span>
     ]);
             </code></pre>
-            <div class='fragment'><small style="margin: 1em 0 -1em -35em;">config.json</small>
+            <div class='fragment'><small style="margin: 1em 0 -1em -30em;">examples/example1.json</small>
             <pre><code contenteditable><small>
     {
       "host": "http://drupal.local",
@@ -725,6 +725,7 @@ https://github.com/travist/drupal.go.js
           </section>
           <section>
             <h3>Example 2: Create content on the fly.</h3>
+            <div class='fragment'><small style="margin: 1em 0 -1em -30em;">examples/example2.js</small>
             <pre><code contenteditable style='max-height: 450px;'><small style='font-size:0.7em;'>
     var drupal = require('drupalgo');
     var async = require('async');
@@ -755,7 +756,7 @@ https://github.com/travist/drupal.go.js
           </section>
           <section>
             <h3>Example 3: Automated Content Creation.</h3>
-            <small style="margin: 1em 0 -1em -35em;">example3.json</small>
+            <small style="margin: 1em 0 -1em -30em;">examples/example3.json</small>
             <pre><code contenteditable><small>
     {
         "host": "http://drupal.local",
@@ -774,7 +775,7 @@ https://github.com/travist/drupal.go.js
         ]
     }
             </small></code></pre>
-            <div class='fragment'><small style="margin: 1em 0 -1em -37em;">app.js</small>
+            <div class='fragment'><small style="margin: 1em 0 -1em -30em;">examples/example3.js</small>
             <pre><code contenteditable>
     var drupal = require('drupalgo');
     var async = require('async');
@@ -787,11 +788,56 @@ https://github.com/travist/drupal.go.js
             </code></pre></div>
           </section>
           <section>
-            <h3>Example 4: Auto module maintainer.</h3>
+            <h3>Example 4: Node Fields.</h3>
+            <div class='fragment'><small style="margin: 1em 0 -1em -30em;">examples/example4.json</small>
+            <pre><code style="max-height:550px" contenteditable><small>
+    {
+        "host": "http://drupal.local",
+        "user": "admin",
+        "nodes": [
+          {
+            "type": "article",
+            "title": "Hello There",
+            "body": "Body still works...",
+            "fields": {
+              <span class="fragment">"select[name='field_shirt_size[und]']": {
+                "action": "select",
+                "value": "m"
+              },</span>
+              <span class="fragment">"input[name='field_favorite_color[und]'][value='orange']": {
+                "action": "choose"
+              },</span>
+              <span class="fragment">"input[name='field_interests[und][math]']": {
+                "action": "check"
+              },</span>
+              <span class="fragment">"input[name='field_interests[und][english]']": {
+                "action": "check"
+              },</span>
+              <span class="fragment">"input[name='field_approved[und]']": {
+                "action": "check"
+              }</span>
+            }
+          },
+          <span class="fragment">{
+            "type": "article",
+            "title": "This is another node",
+            "body": "Nice!",
+            "fields": {
+              ...
+              ...
+            }
+          }</span>
+        ]
+    }
+            </small></code></pre>
+          </section>
+          <section>
+            <h3>Example 5: Auto module maintainer.</h3>
+            <div class='fragment'><small style="margin: 1em 0 -1em -30em;">examples/example5.json</small>
             <pre><code contenteditable>
     var drupal = require('drupalgo');
     var async = require('async');
-    <span class='fragment'>var browser = drupal.load('example4.json');</span>
+    <span class='fragment'>var browser = drupal.load('example5.json');</span>
 
     <span class='fragment'>async.series([
       drupal.go('login'),

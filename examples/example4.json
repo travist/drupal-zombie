@@ -1,4 +1,49 @@
 {
-    "host": "http://drupal.org",
-    "user": "travist"
+    "host": "http://localhost:8888",
+    "user": "admin",
+    "nodes": [
+      {
+        "type": "article",
+        "title": "This is amazing!",
+        "body": "This is a body!",
+        "fields": {
+          "select[name='field_shirt_size[und]']": {
+            "action": "select",
+            "value": "m"
+          },
+          "input[name='field_favorite_color[und]'][value='orange']": {
+            "action": "choose"
+          },
+          "input[name='field_interests[und][math]']": {
+            "action": "check"
+          },
+          "input[name='field_interests[und][english]']": {
+            "action": "check"
+          },
+          "input[name='field_approved[und]']": {
+            "action": "check"
+          }
+        }
+      },
+      {
+        "type": "article",
+        "title": "Sweeeeeet!",
+        "body": "Testing out node creation.",
+        "fields": {
+          "select[name='field_shirt_size[und]']": {
+            "action": "select",
+            "value": "xl"
+          },
+          "input[name='field_favorite_color[und]'][value='red']": {
+            "action": "choose"
+          },
+          "input[name='field_interests[und][science]']": {
+            "action": "check"
+          },
+          "input[name='field_interests[und][reading]']": {
+            "action": "check"
+          }
+        }
+      }
+    ]
 }
