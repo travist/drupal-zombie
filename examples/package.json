@@ -2,6 +2,8 @@
   "name": "drupal-automate",
   "dependencies": {
     "drupalgo": ">=0",
-    "async": ">=0"
+    "async": ">=0",
+    "zombie": "< 2",
+    "underscore": ">=0"
   }
 }
