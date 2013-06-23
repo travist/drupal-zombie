@@ -32,7 +32,8 @@
         <section>
           <h1>Automating and Testing Drupal with<br/>Z<img class="trans-image zombie-image" src="assets/drupal-zombie.png" />mbie.js</h1>
           <h3>From bite to believing</h3>
-          <p><small>Infected by <a href="http://github.com/travist">Travis Tidwell</a> | <a href="http://travistidwell.com">http://travistidwell.com</a> | <a href="http://twitter.com/softwaregnome">@softwaregnome</a> | <a href='https://allplayers.com'>AllPlayers.com</a></small></p>
+          <p><small>Infected by <a href="http://github.com/travist">Travis Tidwell</a> (travist)</small></p>
+          <p><small><a href="http://github.com/travist">http://github.com/travist</a> | <a href="http://travistidwell.com">http://travistidwell.com</a> | <a href="http://twitter.com/softwaregnome">@softwaregnome</a> | <a href='https://allplayers.com'>AllPlayers.com</a></small></p>
           <p><small>Follow along @ <a href='http://travistidwell.com/drupal-zombie'>http://travistidwell.com/drupal-zombie</a></small></p>
           <p><small>Code @ <a href='https://github.com/travist/drupal-zombie'>https://github.com/travist/drupal-zombie</a></small></p>
         </section>
@@ -442,6 +443,7 @@ https://github.com/caolan/async
       });
     });
             </small></code></pre>
+            <div class="fragment"><small style="margin: 1em 0 -1em -30em;">examples/viewslist.js</small>
             <pre class='fragment'><code contenteditable>
     async.series([
       <span class="fragment">go('visit', 'http://drupal.org/forum'),</span>
@@ -457,38 +459,6 @@ https://github.com/caolan/async
       }</span>
     ]);
             </code></pre>
-          </section>
-          <section>
-            <h3>The whole app</h3>
-            <pre><code contenteditable><small>
-    var Browser = require("zombie");
-    var browser = new Browser();
-    var _ = require('underscore');
-    var async = require('async');
-
-    var go = function() {
-      var args = _.values(arguments);
-      var method = args.shift();
-      return function(done) {
-        args.push(done);
-        browser[method].apply(browser, args);
-      };
-    };
-
-    async.series([
-      go('visit', 'http://drupal.org/forum'),
-      function(done) {
-        var nodes = browser.queryAll('tbody tr');
-        async.eachSeries(nodes, function(node, nodeDone) {
-          var link = browser.query('div.name a', node);
-          browser.fire("click", link, function() {
-            console.log(browser.text('h1'));
-            nodeDone();
-          });
-        }, done);
-      }
-    ]);
-            </small></code></pre>
           </section>
           <section>
             <h3>async.js: Methods to care about</h3>
@@ -580,11 +550,11 @@ https://github.com/caolan/async
     var config =    require('nconf');
 
     <span class='fragment'>config.argv().env().file({file:'config.json'});</span>
-    <span class='fragment'>var browser = new Browser({site: config.get('host')});</span>
-    <span class='fragment'>var go = function() {......};
-    var login = function(user, pass, done) {......};</span>
 
-    <span class='fragment'>async.series([
+    <span class='fragment'>...
+    ...
+
+    async.series([
       <span class='fragment'>go('login', config.get('user'), config.get('pass'))</span>
     ]<span class='fragment'>, function() {
       console.log('Logged in as admin.');
@@ -610,10 +580,10 @@ https://github.com/caolan/async
             <pre><code contenteditable>
     var prompt = require('prompt');
     prompt.start();
+    <span class='fragment'>...
+    ...
 
-    <span class='fragment'>... other boilerplate code (go, login, etc) ...</span>
-
-    <span class='fragment'>async.series([
+    async.series([
       <span class='fragment'>function(done) {
         <span class='fragment'>prompt.get({name: 'pass', hidden: true}, function(pass) {
           <span class='fragment'>config.set('pass', pass);</span>

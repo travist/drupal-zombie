@@ -3,7 +3,6 @@ var browser = new Browser();
 var _ = require('underscore');
 var async = require('async');
 
-/** BAD!
 browser.visit('http://drupal.org/forum', function() {
   var nodes = browser.queryAll('tbody tr');
   _.each(nodes, function(node) {
@@ -13,7 +12,6 @@ browser.visit('http://drupal.org/forum', function() {
     });
   });
 });
-**/
 
 /** GOOD!
 var go = function() {
